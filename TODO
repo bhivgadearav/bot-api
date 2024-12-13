@@ -1,0 +1,3 @@
+Switch the authentication to check for password in every request 
+Complete the empty function in controller files
+Add these functions - getPublicKey, getPrivateKey, getCurrentNetwork, getWallet
