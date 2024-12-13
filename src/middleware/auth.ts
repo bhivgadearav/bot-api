@@ -3,8 +3,6 @@ import User from '../models/userModel';
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 
-// remove jwt verification and use password sent in req.body to authorize user requests
-// test if the current jwt authentication works and put it in a jwt branch so I can go back to it if needed
 const SECRET = process.env.JWT_SECRET || 'defaultsecret';
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
