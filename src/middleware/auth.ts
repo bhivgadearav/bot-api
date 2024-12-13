@@ -14,7 +14,9 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
             res.status(401).json({ message: 'Telegram ID or password missing in request.' });
             return; 
         }
-        const user = await User.findById(telegramId);
+        const user = await User.findOne({
+            telegramId: telegramId
+        });
         if (!user) {
             res.status(401).json({ message: 'User is not registered.' });
             return; 
@@ -27,17 +29,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         req.user = user;
         next();
     } catch (error: any) {
-        if (error instanceof jwt.TokenExpiredError) {
-            res.status(401).json({ message: 'Token expired, please login again. This measure is for your own security.' });
-            return; 
-        }
-        else if (error instanceof jwt.JsonWebTokenError) {
-            res.status(401).json({ message: 'Invalid token' });
-            return; 
-        }
-        else {
-            res.status(401).json({ message: 'Authentication failed', details: error.message });
-            return; 
-        }
+        res.status(401).json({ message: 'Authentication failed', details: error.message });
+        return; 
     }
 };
