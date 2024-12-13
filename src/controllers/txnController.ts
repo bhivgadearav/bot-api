@@ -76,8 +76,8 @@ export const transfer = async (req: Request, res: Response): Promise<void> => {
                 lamports: amount,
             })
         );
-        await connection.sendRawTransaction(transaction.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
-        res.status(200).json({ transaction });
+        const signature = await connection.sendRawTransaction(transaction.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
+        res.status(200).json({ signature });
     } catch (error: any) {
         res.status(500).json({ error: 'Transfer failed', details: error.message });
     }

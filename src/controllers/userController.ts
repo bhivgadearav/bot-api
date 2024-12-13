@@ -55,20 +55,3 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ error: 'Signup failed', details: error.message });
     }
 };
-
-export const signin = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { telegramId, password } = req.body;
-        const user = await User.findOne({ telegramId });
-
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            res.status(401).json({ message: 'Invalid credentials' });
-            return;
-        }
-
-        const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: '1h' });
-        res.status(200).json({ token });
-    } catch (error: any) {
-        res.status(500).json({ error: 'Signin failed', details: error.message });
-    }
-};
