@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel';
 import { NextFunction, Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 
 // remove jwt verification and use password sent in req.body to authorize user requests
 // test if the current jwt authentication works and put it in a jwt branch so I can go back to it if needed
@@ -8,25 +9,22 @@ const SECRET = process.env.JWT_SECRET || 'defaultsecret';
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            res.status(401).json({ message: 'Authentication required' });
+        const { telegramId, password } = req.body;
+        if (!telegramId || !password) {
+            res.status(401).json({ message: 'Telegram ID or password missing in request.' });
             return; 
         }
-
-        const decoded = jwt.verify(token, SECRET) as jwt.JwtPayload;
-        const user = await User.findById(decoded.id);
+        const user = await User.findById(telegramId);
         if (!user) {
-            res.status(401).json({ message: 'Invalid token' });
+            res.status(401).json({ message: 'User is not registered.' });
+            return; 
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            res.status(401).json({ message: 'Invalid password.' });
             return; 
         }
         req.user = user;
-
-        if (!req.user) {
-            res.status(401).json({ message: 'Invalid token' });
-            return; 
-        }
-
         next();
     } catch (error: any) {
         if (error instanceof jwt.TokenExpiredError) {
