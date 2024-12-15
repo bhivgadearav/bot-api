@@ -35,14 +35,15 @@ const generateWallet = async (index: number) => {
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { telegramId, password } = req.body;
+        const { telegramId, password, name } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
         const { mnemonic, publicKey, privateKey } = await generateWallet(0);
         const newUser = new User({
             telegramId,
             password: hashedPassword,
             mnemonic: mnemonic,
-            wallets: [{PublicKey: publicKey, PrivateKey: privateKey}],
+            wallets: [{Name: name, PublicKey: publicKey, PrivateKey: privateKey}],
+            mainWallet: {Name: name, PublicKey: publicKey, PrivateKey: privateKey}
         });
         await newUser.save();
         res.status(201).json({

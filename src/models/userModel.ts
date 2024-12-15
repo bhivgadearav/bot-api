@@ -11,6 +11,7 @@ export enum TransactionStatus {
 export type HDMnemonic = string[];
 
 export interface Wallet {
+  Name: string;
   PublicKey: string;
   PrivateKey: string;
 }
@@ -26,18 +27,20 @@ export interface UserInterface extends Document {
   password: string;
   mnemonic: HDMnemonic;
   wallets: Wallet[];
+  mainWallet: Wallet;
   txns?: Txn[];
   currentNetwork: string;
 }
 
 // Schemas
 const WalletSchema = new Schema<Wallet>({
+  Name: { type: String, required: true, unique: true },
   PublicKey: { type: String, required: true },
   PrivateKey: { type: String, required: true },
 });
 
 const TxnSchema = new Schema<Txn>({
-  id: { type: String, required: true },
+  id: { type: String, required: true, unique: true },
   signature: { type: String, required: true },
   status: {
     type: String,
@@ -51,9 +54,10 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   mnemonic: { type: [String], required: true },
   wallets: { type: [WalletSchema], required: true },
+  mainWallet: { type: WalletSchema, required: true },
   txns: { type: [TxnSchema], default: [] },
   currentNetwork: { type: String, default: clusterApiUrl("mainnet-beta") },
 });
 
 // Export the User model
-export default mongoose.model("User", UserSchema);
+export default mongoose.model("telegram-user", UserSchema);

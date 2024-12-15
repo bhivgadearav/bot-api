@@ -1,2 +1,2 @@
 Complete the empty function in controller files
-Add these functions - getPublicKey, getPrivateKey, getCurrentNetwork, getWallet
+Add these functions - switchMainWallet, getPublicKey, getPrivateKey, getCurrentNetwork, getWallet, getAllWallets GetMneomonic
