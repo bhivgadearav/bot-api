@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import User, { UserInterface } from '../models/userModel';
 import { Request, Response } from 'express';
 import { generateMnemonic, mnemonicToSeed } from 'bip39';

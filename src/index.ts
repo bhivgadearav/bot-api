@@ -1,11 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import router from './routes';
 import dbConnect from './db/connect';
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
+
 
 const app = express();
 app.use(express.json());

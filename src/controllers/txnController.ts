@@ -41,9 +41,10 @@ export const getBalance = async (req: Request, res: Response): Promise<void> => 
             res.status(400).json({ error: 'User not authenticated' });
             return;
         }
-        const { walletIndex } = req.body;
+        const { walletName } = req.body;
         const connection = new Connection(req.user.currentNetwork, 'confirmed');
-        const balance = await connection.getBalance(new PublicKey(req.user.wallets[walletIndex].PublicKey));
+        const publicKey = new PublicKey(req.user.wallets.find(w => w.Name === walletName)?.PublicKey || req.user.wallets[0].PublicKey);
+        const balance = await connection.getBalance(publicKey);
         res.status(200).json({ balance });
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to fetch balance', details: error.message });
@@ -56,9 +57,9 @@ export const transfer = async (req: Request, res: Response): Promise<void> => {
             res.status(400).json({ error: 'User not authenticated' });
             return;
         }
-        const { to, amount, walletIndex } = req.body;
+        const { to, amount, walletName } = req.body;
         const connection = new Connection(req.user.currentNetwork, 'confirmed');
-        const privateKeyArray = bs58.decode(req.user.wallets[walletIndex].PrivateKey);
+        const privateKeyArray = bs58.decode(req.user.wallets.find(w => w.Name === walletName)?.PrivateKey || req.user.wallets[0].PrivateKey);
         const keypair = Keypair.fromSecretKey(privateKeyArray);
         const accountInfo = await connection.getAccountInfo(keypair.publicKey);
         if (!accountInfo) {
@@ -73,9 +74,12 @@ export const transfer = async (req: Request, res: Response): Promise<void> => {
             SystemProgram.transfer({
                 fromPubkey: keypair.publicKey,
                 toPubkey: new PublicKey(to),
-                lamports: amount,
+                lamports: amount * LAMPORTS_PER_SOL,
             })
         );
+        transaction.recentBlockhash = (await connection.getLatestBlockhash('max')).blockhash;
+        transaction.feePayer = keypair.publicKey;
+        transaction.sign(keypair);
         const signature = await connection.sendRawTransaction(transaction.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' });
         res.status(200).json({ signature });
     } catch (error: any) {

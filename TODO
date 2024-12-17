@@ -1,2 +1,5 @@
 Complete the empty function in controller files
-Add these functions - switchMainWallet, getPublicKey, getPrivateKey, getCurrentNetwork, getWallet, getAllWallets GetMneomonic
+Add these functions - switchMainWallet, getPublicKey, getPrivateKey, getCurrentNetwork, getWallet, getAllWallets, GetMneomonic
+getAllWalletNames, getWalletByName
+
+host the bot.py and backend server, all the current functions work and figure out a way to secure credentials in .env files for both

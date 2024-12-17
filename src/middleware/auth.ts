@@ -1,9 +1,6 @@
-import jwt from 'jsonwebtoken';
 import User from '../models/userModel';
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-
-const SECRET = process.env.JWT_SECRET || 'defaultsecret';
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
